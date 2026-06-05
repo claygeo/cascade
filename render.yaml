@@ -1,0 +1,59 @@
+# Render blueprint.
+#
+# The free tier runs the worker IN-PROCESS in the API (RUN_WORKER_IN_PROCESS=true),
+# so a single web service deploys the whole backend for $0. The API start command
+# applies migrations, then serves.
+#
+# For production you'd run a DEDICATED worker (uncomment `cascade-worker` below —
+# note: Render background workers require a paid instance) and set
+# RUN_WORKER_IN_PROCESS=false on the API.
+services:
+  - type: web
+    name: cascade-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: RUN_WORKER_IN_PROCESS
+        value: "true"
+      - key: DATABASE_URL
+        sync: false        # paste the Supabase Session-pooler URL in the dashboard
+      - key: DB_SCHEMA
+        value: cascade
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FERNET_KEY
+        sync: false        # python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())"
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: LLM_DEFAULT_MODEL
+        value: openai/gpt-4o-mini
+      - key: FRONTEND_ORIGIN
+        sync: false        # your Netlify URL, e.g. https://cascade-ai.netlify.app
+
+  # --- Production: a dedicated worker process (requires a paid Render instance) ---
+  # - type: worker
+  #   name: cascade-worker
+  #   runtime: docker
+  #   dockerfilePath: ./backend/Dockerfile
+  #   dockerContext: ./backend
+  #   dockerCommand: python -m app.worker
+  #   plan: starter
+  #   envVars:
+  #     - key: ENVIRONMENT
+  #       value: production
+  #     - key: DATABASE_URL
+  #       sync: false
+  #     - key: DB_SCHEMA
+  #       value: cascade
+  #     - key: FERNET_KEY
+  #       sync: false
+  #     - key: OPENROUTER_API_KEY
+  #       sync: false
+  #     - key: LLM_DEFAULT_MODEL
+  #       value: openai/gpt-4o-mini

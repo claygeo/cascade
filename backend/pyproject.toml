@@ -1,0 +1,21 @@
+[project]
+name = "cascade-backend"
+version = "0.1.0"
+description = "Cascade — AI Workflow Builder backend (FastAPI + async SQLAlchemy)"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+# B008: FastAPI's `= Depends(...)` in argument defaults is the idiomatic pattern.
+# ASYNC109: passing an explicit `timeout` to an async client call is intentional.
+ignore = ["B008", "ASYNC109"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,0 +1,16 @@
+# Netlify build for the Vite/React frontend.
+# Set VITE_API_BASE in the Netlify UI to your Render API origin
+# (e.g. https://cascade-api.onrender.com) so the SPA calls the live API.
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback so client-side routes resolve on direct load / refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

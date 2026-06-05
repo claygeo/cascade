@@ -1,0 +1,58 @@
+# Local full stack: Postgres + API + a SEPARATE worker process.
+#   docker compose up --build
+# Then open http://localhost:8000/docs  (set OPENROUTER_API_KEY in your shell or
+# a root .env for LLM steps to work). Secrets below are LOCAL-ONLY demo values;
+# production secrets are configured in Render.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cascade
+      POSTGRES_PASSWORD: cascade
+      POSTGRES_DB: cascade
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cascade -d cascade"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+
+  migrate:
+    build: ./backend
+    command: alembic upgrade head
+    environment: &appenv
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+asyncpg://cascade:cascade@db:5432/cascade
+      DB_SCHEMA: cascade
+      JWT_SECRET: 6ce9143de28f0919739eeccc747a8ed934bd8ebed05e08a5d20e9a2f76b9c76f
+      FERNET_KEY: xXyF021h8-UoM7k7bsoT6O4ziKm2zBxMYszGasIae7M=
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      LLM_DEFAULT_MODEL: openai/gpt-4o-mini
+      FRONTEND_ORIGIN: http://localhost:5173
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    command: sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment: *appenv
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    build: ./backend
+    command: python -m app.worker
+    environment: *appenv
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
