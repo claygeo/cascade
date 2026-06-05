@@ -25,7 +25,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 from app.config import settings  # noqa: E402
-from app.db import SessionLocal  # noqa: E402
+from app.db import SessionLocal, engine  # noqa: E402
 from app.enums import RunStatus  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Run  # noqa: E402
@@ -43,6 +43,9 @@ async def _clean_runs():
         await s.execute(text(f"DELETE FROM {settings.db_schema}.runs"))
         await s.commit()
     yield
+    # Dispose the pool within this test's event loop so connections aren't
+    # reused (and closed) across pytest-asyncio's per-test loops.
+    await engine.dispose()
 
 
 async def _register() -> tuple[str, dict]:

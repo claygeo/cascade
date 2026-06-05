@@ -25,6 +25,8 @@ services:
         sync: false        # paste the Supabase Session-pooler URL in the dashboard
       - key: DB_SCHEMA
         value: cascade
+      - key: DB_SSL_REQUIRE
+        value: "true"
       - key: JWT_SECRET
         generateValue: true
       - key: FERNET_KEY

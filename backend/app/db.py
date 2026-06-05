@@ -30,15 +30,19 @@ class Base(DeclarativeBase):
     metadata = metadata_obj
 
 
+_connect_args: dict = {
+    "server_settings": {"search_path": f"{settings.db_schema},public"},
+    "statement_cache_size": 0,
+}
+if settings.db_ssl_require:
+    _connect_args["ssl"] = "require"
+
 engine = create_async_engine(
     settings.database_url,
     echo=False,
     pool_pre_ping=True,
     pool_recycle=300,
-    connect_args={
-        "server_settings": {"search_path": f"{settings.db_schema},public"},
-        "statement_cache_size": 0,
-    },
+    connect_args=_connect_args,
 )
 
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

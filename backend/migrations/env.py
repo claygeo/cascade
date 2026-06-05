@@ -32,6 +32,7 @@ def _include_name(name, type_, parent_names):
 
 def _do_run_migrations(connection) -> None:
     connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{SCHEMA}"'))
+    connection.commit()  # end the implicit txn so Alembic owns + commits its own
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
@@ -45,16 +46,20 @@ def _do_run_migrations(connection) -> None:
 
 
 async def _run_async_migrations() -> None:
+    connect_args: dict = {
+        "server_settings": {"search_path": f"{SCHEMA},public"},
+        "statement_cache_size": 0,
+    }
+    if settings.db_ssl_require:
+        connect_args["ssl"] = "require"
     engine = create_async_engine(
         settings.database_url,
         poolclass=pool.NullPool,
-        connect_args={
-            "server_settings": {"search_path": f"{SCHEMA},public"},
-            "statement_cache_size": 0,
-        },
+        connect_args=connect_args,
     )
     async with engine.connect() as connection:
         await connection.run_sync(_do_run_migrations)
+        await connection.commit()  # flush DDL through the async layer
     await engine.dispose()
 
 

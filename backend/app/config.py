@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     # --- Database ---
     database_url: str
     db_schema: str = "cascade"
+    db_ssl_require: bool = False  # Supabase pooler requires SSL; local Postgres does not
 
     # --- Auth ---
     jwt_secret: str
