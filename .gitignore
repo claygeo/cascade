@@ -23,6 +23,9 @@ dist/
 dist-ssr/
 .vite/
 *.local
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # --- OS / editor ---
 .DS_Store
