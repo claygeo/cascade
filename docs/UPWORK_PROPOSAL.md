@@ -1,14 +1,15 @@
 # Upwork proposal draft
 
-> Paste into Upwork (via Hermes). Replace `[DEMO_URL]` once Netlify is live.
-> Keep it short — the demo does the talking.
+> Paste into Upwork (via Hermes). Live links are filled in below.
+> Keep it short — the demo does the talking. (Note: the API is on Render's free
+> tier — the first load may take ~30–50s to wake from idle.)
 
 ---
 
 Hi — instead of just telling you I can build this, I built a working miniature of
 exactly what you described so you can click around before we even talk.
 
-**Live demo:** [DEMO_URL]  (hit "Run sample" on the landing page — no signup)
+**Live demo:** https://cascade-workflows.netlify.app  (hit "Run sample" on the landing page — no signup)
 **Source:** https://github.com/claygeo/cascade
 
 It's an AI workflow SaaS: users sign up, build a workflow out of ordered steps

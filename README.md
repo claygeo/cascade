@@ -9,7 +9,10 @@ results. Multi-tenant, with bring-your-own-key LLM access.
 > Workflow SaaS" stack: **FastAPI · async SQLAlchemy · PostgreSQL · a crash-safe
 > job worker · OpenAI/Anthropic via OpenRouter · Docker.**
 
-**Live demo:** _set after deploy_ · **API docs:** `/<api>/docs` · **Repo:** https://github.com/claygeo/cascade
+**Live demo:** https://cascade-workflows.netlify.app · **API docs:** https://cascade-api-sg51.onrender.com/docs · **Repo:** https://github.com/claygeo/cascade
+
+> The API runs on Render's free tier and **spins down after ~15 min idle**, so the
+> first request (and the landing page's first "Run sample") can take ~30–50s to wake.
 
 ---
 
