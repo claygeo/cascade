@@ -15,7 +15,7 @@ services:
     dockerContext: ./backend
     plan: free
     healthCheckPath: /health
-    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    # The image's CMD (start.sh) migrates then starts uvicorn.
     envVars:
       - key: ENVIRONMENT
         value: production

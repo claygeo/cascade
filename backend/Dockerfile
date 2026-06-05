@@ -18,6 +18,6 @@ USER appuser
 
 EXPOSE 8000
 
-# Default command runs the API. The worker service overrides this with
-# `python -m app.worker` (see render.yaml / docker-compose.yml).
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Default command: migrate, then run the API (see start.sh). The worker service
+# overrides this with `python -m app.worker` (see docker-compose.yml).
+CMD ["sh", "start.sh"]
